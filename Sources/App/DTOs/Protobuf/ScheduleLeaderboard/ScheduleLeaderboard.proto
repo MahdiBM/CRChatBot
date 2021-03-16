@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message ScheduleLeaderboard {
+    repeated Item items = 1;
+    message Item {
+        string tag = 1;
+        string name = 2;
+        int32 trophies = 3;
+    }
+}
