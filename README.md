@@ -7,14 +7,6 @@ As of now its main Twitch-chat abilities are the followings:
 - [x] Searches for opponent's decks based on their trophies, and tells you their decks.
 - [x] Searches for current rank info of the streamer and says it in the chat, or does the same for another player if you provide the bot with someone else's player tag.
 
-# Technologies used
-This app is a faily simple app, but its not as simple as one might think by just reading the introduction! Some stuff used to form the app:  
-* Fluent; to work with the Docker PostgreSQL database.
-* Queues; doing ~3 tasks every second, to gather some required data about players.
-* Redis; as a faaast in-memory database, to save 1000s of players to in every second.
-* SwiftProtobuf; for high performance JSON decoding.
-* XCTVapor; to write tests!
-
 # I only trust my own eyes!
 Want to see with your own eyes how this works in a real Twitch chat? You can head to [my Twitch channel](https://twitch.com/mahdimmbm) and use its chat to see how the command works (for clarification, I don't stream). Type `!cr help` and the command should respond to you.   
 Some general things to note when using the command in a Twitch chat:
@@ -85,3 +77,11 @@ Now your channel should be white-listed and you should be good to go. Type the f
 !cr help deck
 ```
 You should see a message explaining how you can work with the `!cr deck` command.
+
+# Technologies used
+This app is a faily simple app, but its not as simple as one might think by just reading the introduction! Some stuff used to form the app:  
+* Fluent; to work with the Docker PostgreSQL database.
+* Queues; doing ~3 tasks every second, to gather some required data about players.
+* Redis; as a faaast in-memory database, to save 1000s of players to in every second.
+* SwiftProtobuf; for high performance JSON decoding.
+* XCTVapor; to write tests!
