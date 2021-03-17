@@ -1,11 +1,38 @@
 # CRChatBot
-A Clash Royale Chat Bot for Twitch, written in Swift using Vapor, and built on top of NightBot.
+A Clash Royale Chat Bot for Twitch, written in Swift using Vapor 4, and built on top of NightBot.
 
 # Introduction
 This is a non-profit community project written by me (MahdiBM), for use of Clash Royale streamers on Twitch, and with help of the official Clash Royale API provided by Supercell.  
 As of now its main Twtich-chat abilities are the followings:  
 - [x] Searches for opponent's decks based on their trophies, and tells you their decks.
 - [x] Searches for current rank info of the streamer and says it in the chat, or does the same for another player if you provide the bot with someone else's player tag.
+
+# How to install?
+Having at least a little bit of knowledge about how command line tools work and how to set up a server is recommended.   
+[Google](https://google.com) and [Vapor docs](https://docs.vapor.codes/4.0/) are your friends.   
+I won't go into details, but i'll try to mention all the steps that might not be 100% needed, but are what i'd do.   
+I'll assume you are using Ubuntu.      
+* Get a domain and a droplet and set your domain to point to your droplet on your provider's panel.  
+  * You can get a server from AWS (Amazon), CloudFalre or Digital Ocean (or any other provider).   
+  * Because of how Clash Royale API works, your server needs to have an static IP (So Heroku droplets with non-static IPs wil not work.)   
+  * If you need it to work with non-static IPs, you can head to [RoyaleAPI dev server](http://discord.royaleapi.dev) and You'll find a free proxy service there.   
+  Here i'll assume you are not using that proxy service, but 98% of things should be the same even if you are using that service.
+* Install these tools: [Swift](https://swift.org), [Supervisor](https://docs.vapor.codes/4.0/deploy/supervisor/), [Nginx](https://docs.vapor.codes/4.0/deploy/nginx/), [Docker](https://docs.vapor.codes/4.0/deploy/docker/), [Redis](https://redis.io).    
+* For the next step, make sure you have set up the tools on the last step currectly. Some general notes:  
+  * Swift should be added to your PATH.
+  * Nginx should be set up to accept requests from the outside world and guide them to this app.
+  * Supervisor should be set up to take care of running the app.
+  * Docker is needed to make a Postgres database for the app to use. 
+  * Redis is also needed as the faster, in-memory database of the app.
+* After filling the placeholders that are in the app's files, clone this app on your server.
+  * Change you directory to the directory of this app.
+  * Set up your Postgres database on Docker. Here's an example:
+    ```
+    docker run --name twitch -e POSTGRES_DB=twitch -e POSTGRES_USER=twitch -e POSTGRES_PASSWORD=password -p 5433:5432 -d postgres
+    ```
+  * Do `swift build` to build the app, then `swift run Run migrate` to run the migrations on the Postgres database.
+  * After setting up your Supervisor to take care of running your app, the redis database, and docker's postgres database together, you can reload Supervisor
+    and your app should be good to go.
 
 # How to use?
 After setting up the bot on your servers, and adding NightBot to your Twitch channel, type the following in your Twitch chat to enable the bot:   
