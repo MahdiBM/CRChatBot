@@ -7,6 +7,12 @@ As of now its main Twitch-chat abilities are the followings:
 - [x] Searches for opponent's decks based on their trophies, and tells you their decks.
 - [x] Searches for current rank info of the streamer and says it in the chat, or does the same for another player if you provide the bot with someone else's player tag.
 
+# Show me!
+Want to see with your own eyes how this works in a real Twitch chat? You can head to [my Twitch channel](https://twitch.com/mahdimmbm) and use its chat to see how the command works (for clarification, I don't stream). Type `!cr help` and the command should respond to you.   
+Some general things to note when using the command in a Twitch chat:
+* NightBot has a cooldown for every command. That is mostly due to the fact that Twitch's API has limits for number of requests NightBot can make, so NightBot needs to only answer a reasonable amount of commands so it doesn't exceed that limit. This cooldown appears to be a little bit too long for normal chatters (10 +- 5 seconds), but if you are a moderator in a channel, it should only be about 5 seconds.
+* If something goes wrong in the app, or the app takes more than 10s to respond to NightBot, you'll see an error message from NightBot. If NightBot doesn't respond to your command at all, then its just NightBot ignoring you and there is nothing wrong with the app.
+
 # Repairing the project
 As one could guess, there are some credentials used in this project that are secrets, and only the one that wants to deploy the project should know them. These info are replaced with placeholders that you'll need to fill.   
 There are also some other things you'll need to configure as well, here are most of them:    
