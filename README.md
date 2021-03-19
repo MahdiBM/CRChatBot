@@ -29,7 +29,7 @@ Having at least a little bit of knowledge about how command line tools work and 
 I won't go into details, but i'll try to mention all the steps that might not be 100% needed, but are what i'd do.   
 I'll assume you are using Ubuntu.      
 * Get a domain and a droplet and set your domain to point to your droplet on your provider's panel.  
-  * You can get a server from AWS (Amazon), CloudFalre or Digital Ocean (or any other provider).   
+  * You can get a server from AWS (Amazon), CloudFlare or Digital Ocean (or any other provider).   
   * Because of how Clash Royale API works, your server needs to have an static IP (So Heroku droplets with non-static IPs wil not work.)   
   * If you need it to work with non-static IPs, you can head to [RoyaleAPI dev server](http://discord.royaleapi.dev) and You'll find a free proxy service there.   
   Here i'll assume you are not using that proxy service, but most things should be the same even if you are using that service.
@@ -63,7 +63,7 @@ You can now command the bot on your Twitch chat. Type the following in your Twit
 ```
 You should be greeted with some kind-of an error message saying that your channel is not white-listed! Don't worry though!    
 To white-list any channels, you only need to know their channel name. You can find it in their url on Twitch, when you are watching that channel live.   
-As an example, the url for my channel is `https://twitch.tv/mahdimmbm` so my channel name is `mahdimmbm`. Take the channel name and call this endpoint to white-list the channel:   
+As an example, the url for my channel is `https://twitch.tv/mahdimmbm` so my channel name is `mahdimmbm`. Take the channel name and call this endpoint to white-list the channel (Channel name should be all lower-cased):   
 ```
 https://yourdomain.com/twitch/api/v1/streamers/CHANNEL_NAME/add
 ```
