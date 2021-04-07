@@ -5,10 +5,7 @@ extension TwitchResponder {
     func setInfo(key: String, value: String) throws -> ELF<String> {
         let channelName = nightBot.twitchChannel.name.lowercased()
         // Restrict to owner/moderator
-        let userLevel = nightBot.twitchUser?.userLevel
-        guard userLevel == "owner" || userLevel == "moderator" else {
-            throw ResponseError.streamerOrModNeeded
-        }
+        try nightBot.twitchUser.isModerator()
         
         let streamer = Streamers.query(on: req.db)
             .filter(\.$channelName, .equal, channelName)
@@ -19,7 +16,7 @@ extension TwitchResponder {
             case let streamer?: return try setInfo(for: streamer, key: key, value: value)
             // At this point, by my calculations, there must already be a streamer
             // and this will never be nil.
-            default: throw ResponseError.unknownFailure(errorId: 93843)
+            default: throw Responses.unknownFailure(errorId: 93843)
             }
         }
         
@@ -44,7 +41,7 @@ private extension TwitchResponder {
         let allKeys = Keys.allCases
         guard let enumKey = (allKeys.filter { keyFilter(case: $0) }.first) else {
             let validKeys = allKeys.map(\.rawValue).joined(separator: ", ")
-            throw ResponseError.custom("'\(key)' is not a valid key so you cant set values for it."
+            throw Responses.custom("'\(key)' is not a valid key so you cant set values for it."
                                         + "Current valid keys are: " + validKeys)
         }
         

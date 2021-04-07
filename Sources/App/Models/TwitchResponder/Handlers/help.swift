@@ -6,14 +6,14 @@ extension TwitchResponder {
         // If the arg is a command name then show help for that command.
         // In that case, RequestType should be initialized successfully.
         let requestType = RequestType.find(using: arg)
-        let futureString = { (str: String) -> ELF<String> in
-            req.eventLoop.makeSucceededFuture(str)
-        }
+        let error: Responses
         switch requestType {
-        case .deck: return futureString(ResponseError.help(case: .deckCommand).description)
-        case .rank: return futureString(ResponseError.help(case: .rankCommand).description)
-        case .set: return futureString(ResponseError.help(case: .setCommand).description)
-        default: return futureString(ResponseError.help(case: .general).description)
+        case .deck: error = Responses.help(case: .deckCommand)
+        case .rank: error = Responses.help(case: .rankCommand)
+        case .set: error = Responses.help(case: .setCommand)
+        default: error = Responses.help(case: .general)
         }
+        
+        return req.eventLoop.future(error.description)
     }
 }

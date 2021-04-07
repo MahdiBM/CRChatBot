@@ -16,6 +16,7 @@ struct TwitchResponder {
          If you are trying to test as an Admin, don't forget to
          trigger the `twitch/api/v1/streamers/night/add` endpoint once,
          so `night` streamer is added to streamers in db.
+         `night` streamer will be used for when a streamer is needed.
          Some things won't work without the streamer being in the database.
         */
         

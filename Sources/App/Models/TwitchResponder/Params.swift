@@ -17,7 +17,7 @@ extension TwitchResponder {
         
         init(from decoder: Decoder) throws {
             guard let container = try? decoder.container(keyedBy: CodingKeys.self) else {
-                throw ResponseError.noInput
+                throw Responses.noInput
             }
             
             /// Finds value for a given argument. Values must only be strings.

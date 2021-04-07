@@ -41,12 +41,11 @@ final class AdminAuthenticatorTests: XCTestCase {
             }
         }
     }
-    
 }
 
 private struct FakeResponder: Responder {
     func respond(to req: Request) -> EventLoopFuture<Response> {
-        req.eventLoop.makeSucceededFuture(
+        req.eventLoop.future(
             Response.init(
                 status: .ok,
                 version: .http1_1,

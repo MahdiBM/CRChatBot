@@ -26,10 +26,7 @@ class RedisRoutes: RouteCollection {
     
     private func getPlayersWithScore(_ req: Request) throws -> ELF<[DTOs.Redis.Player]> {
         let score = try req.parameters.require("score", as: Int.self)
-        struct Param: Content {
-            var reducer: Double
-        }
-        let reducer = (try? req.query.decode(Param.self))?.reducer ?? 1
+        let reducer = (try? req.query.get(Double.self, at: "reducer")) ?? 1
         return DTOs.Redis.Player.loadFromDb(req, for: score, intervalReducer: reducer)
     }
     

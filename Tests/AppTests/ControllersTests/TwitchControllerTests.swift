@@ -44,7 +44,7 @@ final class TwitchControllerTests: XCTestCase {
             
             // Now the new token must be the same one as the one we saved to the db.
             let request = Request(application: app, on: app.eventLoopGroup.next())
-            let newToken = try TwitchRoutes.getATwitchAccessToken(request).wait()!
+            let newToken = try TwitchRoutes.getATwitchAccessToken(request).wait()
             
             XCTAssertEqual(oauthToken.accessToken, newToken.accessToken)
             XCTAssertEqual(oauthToken.expiresIn, newToken.expiresIn)

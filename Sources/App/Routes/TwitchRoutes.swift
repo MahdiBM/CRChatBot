@@ -19,34 +19,32 @@ class TwitchRoutes: RouteCollection {
         do {
             let responder = try TwitchResponder(req: req)
             return responder.respond()
-        } catch let error as TwitchResponder.ResponseError {
-            return req.eventLoop.makeSucceededFuture(error.description)
+        } catch let error as TwitchResponder.Responses {
+            return req.eventLoop.future(error.description)
         } catch {
-            let error = TwitchResponder.ResponseError.unknownFailure(errorId: 438943)
-            return req.eventLoop.makeSucceededFuture(error.description)
+            let error = TwitchResponder.Responses
+                .unknownFailure(errorId: 438943, description: error.localizedDescription)
+            return req.eventLoop.future(error.description)
         }
     }
     
     private func searchTwitch(_ req: Request) throws -> ELF<DTOs.Twitch.SearchResults> {
-        struct Param: Content {
-            var query: String
-        }
-        let param = try req.query.get(Param.self)
-        return Self.search(req, using: param.query)
+        let query = try req.query.get(String.self, at: "query")
+        return Self.search(req, using: query)
             .unwrap(or: Failure.failed)
     }
 }
 
 extension TwitchRoutes {
-    static func getATwitchAccessToken(_ req: Request) -> ELF<OAuthTokens?> {
+    static func getATwitchAccessToken(_ req: Request) -> ELF<OAuthTokens> {
         OAuthTokens.query(on: req.db)
             .filter(\.$issuer, .equal, .twitch)
             .first()
-            .flatMap { token in
+            .tryFlatMap { token in
                 if let token = token {
                     return twitch.renewTokenIfExpired(req, token: token).map { $0 }
                 } else {
-                    return req.eventLoop.makeSucceededFuture(nil)
+                    throw Failure.noOAuthTokensFound
                 }
             }
     }
@@ -55,7 +53,6 @@ extension TwitchRoutes {
     -> EventLoopFuture<DTOs.Twitch.SearchResults?> {
         
         let requestFromTwitch = getATwitchAccessToken(req)
-            .unwrap(or: Failure.noOAuthTokensFound)
             .flatMap { token -> EventLoopFuture<ClientResponse> in
                 let uriString = "https://api.twitch.tv/helix/search/channels?query=\(queryString)"
                 let uri = URI(string: uriString)

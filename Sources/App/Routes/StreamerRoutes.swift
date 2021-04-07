@@ -142,5 +142,4 @@ class StreamerRoutes: RouteCollection {
             .unwrap(or: Abort(HTTPStatus.badRequest))
     }
     
-    
 }

@@ -8,11 +8,11 @@ extension TwitchResponder {
         let streamer = Streamers.query(on: req.db)
             .filter(\.$channelName, .equal, channelName)
             .first()
-            .unwrap(or: ResponseError.notWhitelisted)
+            .unwrap(or: Responses.notWhitelisted)
         
         return streamer.tryFlatMap { streamer -> ELF<Void> in
             if streamer.performOnlineChecks == false {
-                return req.eventLoop.makeSucceededFuture(())
+                return req.eventLoop.future(())
             }
             else {
                 // If streamer has been online in the past 30 minutes,
@@ -23,7 +23,7 @@ extension TwitchResponder {
                 let lastOnlineDate = Date(timeIntervalSince1970: .init(streamer.lastOnline))
                 let expirationDate = Date().addingTimeInterval(.init(30 * 60))
                 if lastOnlineDate > Date() && lastOnlineDate < expirationDate {
-                    throw ResponseError.notOnline
+                    throw Responses.notOnline
                 } else {
                     // Else, check and make sure streamer is online.
                     return doChannelOnlineCheck(streamer: streamer, channelName: channelName)
@@ -43,7 +43,7 @@ private extension TwitchResponder {
                     streamer.lastOnline = .init(Date().timeIntervalSince1970)
                     return streamer.save(on: req.db)
                 } else {
-                    throw ResponseError.notOnline
+                    throw Responses.notOnline
                 }
             }
     }

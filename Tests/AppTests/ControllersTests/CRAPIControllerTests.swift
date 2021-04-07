@@ -25,6 +25,9 @@ final class CRAPIControllerTests: XCTestCase {
                     fatalError("Servers seem to be in maintenance break."
                                 + " Try running tests in 30/60/90 mins.")
                 }
+                if res.status == .forbidden {
+                    fatalError("Most likely the test token and your IP address don't match")
+                }
                 switch crapiCase {
                 case .tournamentsSearch, .locationsGlobalTourneyRankings:
                     XCTAssertTrue(res.status == .ok || res.status == .notFound)

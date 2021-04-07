@@ -5,7 +5,7 @@ extension CRAPIRequest {
     /// You can get yours from https://developer.clashroyale.com .
     /// Using Clash Royale official API is free for life,
     /// but you must follow their Fan Content Policy @ https://supercell.com/en/fan-content-policy
-    private static let crapiToken = <#ClashRoyaleAPIToken#>
+    private static let crapiToken = <#Clash Royale API token#>
     
     /// Request from CRAPI using self's value.
     var clientRequest: ClientRequest {

@@ -2,7 +2,7 @@ import Vapor
 
 extension TwitchResponder {
     /// NightBot user-friendly Errors.
-    enum ResponseError: Error {
+    enum Responses: Error {
         
         /*
          For cases that have an `errorId` parameter,
@@ -20,7 +20,7 @@ extension TwitchResponder {
         case noResults
         // Error id is just a number to
         // help me where the problem occurred.
-        case unknownFailure(errorId: Int)
+        case unknownFailure(errorId: Int, description: String? = nil)
         case streamerOrModNeeded
         case custom(_ message: String)
         
@@ -47,9 +47,17 @@ extension TwitchResponder {
             }
             let noResults = "Could not find any results for your request."
             let streamerOrModNeeded = "Only channel Owner or Moderators can do this."
-            let unknownFailure = { (errorId: Int) -> String in
-                "An unexpected error occurred."
-                    + " No. \(errorId)"
+            let unknownFailure = { (errorId: Int, desc: String?) -> String in
+                if let desc = desc {
+                    let descStr = desc.count > 300 ?
+                        desc.dropLast(desc.count - 300).map { String($0) }.joined() + "..."
+                        : desc
+                    return "An unexpected error occurred."
+                        + " No. \(errorId)."
+                        + " Error description: \(descStr)"
+                }
+                return "An unexpected error occurred."
+                    + " No. \(errorId)."
             }
             
             switch self {
@@ -63,8 +71,8 @@ extension TwitchResponder {
             case .failedToCommunicateWithCRAPI(let errorId):
                 return failedToCommunicateWithCRAPI(errorId)
             case .noResults: return noResults
-            case .unknownFailure(let errorId):
-                return unknownFailure(errorId)
+            case .unknownFailure(let errorId, let desc):
+                return unknownFailure(errorId, desc)
             case .streamerOrModNeeded: return streamerOrModNeeded
             case .custom(let message): return message
             }
@@ -72,7 +80,7 @@ extension TwitchResponder {
     }
 }
 
-extension TwitchResponder.ResponseError {
+extension TwitchResponder.Responses {
     enum HelpCases {
         case general
         case deckCommand

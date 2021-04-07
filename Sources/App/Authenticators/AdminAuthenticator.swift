@@ -14,6 +14,6 @@ extension Authenticators {
         }
         
         let ultimateOwnerAdmin = BasicAuthorization
-            .init(username: <#Your_Admin_Username#>, password: <#Your_Admin_Password#>)
+            .init(username: <#username#>, password: <#password#>)
     }
 }

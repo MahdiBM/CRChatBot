@@ -39,7 +39,7 @@ extension TwitchResponder {
                   trophies >= minTrophies else {
                 return getPlayersFromDatabase(for: trophies)
             }
-            return req.eventLoop.makeSucceededFuture(leaderboard)
+            return req.eventLoop.future(leaderboard)
         }
         let filteredByTrophies = populatedLeaderboard.map {
             leaderboard -> [Leaderboard.Item] in
@@ -74,7 +74,7 @@ private extension TwitchResponder {
             response -> [Leaderboard.Item] in
             guard let decoded = try? response.content.decode(Leaderboard.self),
                   decoded.items.count != 0 else {
-                throw ResponseError.failedToCommunicateWithCRAPI(errorId: 21923)
+                throw Responses.failedToCommunicateWithCRAPI(errorId: 21923)
             }
             return decoded.items
         }
@@ -92,7 +92,7 @@ private extension TwitchResponder {
                 let saved = req.redis.set(redisKey, to: min)
                 return saved.transform(to: leaderboard)
             } else {
-                return req.eventLoop.makeSucceededFuture(leaderboard)
+                return req.eventLoop.future(leaderboard)
             }
         }
         
@@ -121,7 +121,7 @@ private extension TwitchResponder {
         let guardedFromEmpty = leaderboardItems.flatMapThrowing {
             items -> [Leaderboard.Item] in
             guard !items.isEmpty else {
-                throw ResponseError.noResults
+                throw Responses.noResults
             }
             return items
         }
@@ -171,13 +171,15 @@ private extension TwitchResponder {
             // Filter players by the user-requested filter string.
             if !filterString.removing(" ").isEmpty {
                 filtered = leaderboard.filter {
-                    $0.name.lowercased().contains(filterString)
+                    let foldedFilterString = filterString.folding(options: .diacriticInsensitive, locale: nil)
+                    let foldedName = $0.name.folding(options: .diacriticInsensitive, locale: nil)
+                    return foldedName == foldedFilterString
                 }
             }
         }
         
         switch filtered.isEmpty {
-        case true: throw ResponseError.noResults
+        case true: throw Responses.noResults
         case false: return filtered
         }
     }
@@ -202,7 +204,7 @@ private extension TwitchResponder {
                 + " 10 players were found. Please include a filter argument so we"
                 + " can filter out the players with unrelated names."
             }
-            throw ResponseError.custom(message)
+            throw Responses.custom(message)
         }
         // Even if there are only ~ 10 players found, we should
         // still only try to find 4/5 players' info more than 4/5
@@ -222,7 +224,7 @@ private extension TwitchResponder {
             let content = clientResponse.flatMapThrowing {
                 response -> Battles in
                 guard let decoded = try? response.content.decode(Battles.self) else {
-                    throw ResponseError.failedToCommunicateWithCRAPI(errorId: 327328)
+                    throw Responses.failedToCommunicateWithCRAPI(errorId: 327328)
                 }
                 return decoded
             }
@@ -230,7 +232,7 @@ private extension TwitchResponder {
         }
         let flatBattles = battleRequests.flatten(on: req.eventLoop)
         let noResultsIfError = flatBattles.flatMapErrorThrowing { error -> [Battles] in
-            throw (error is ResponseError) ? error : ResponseError.noResults
+            throw (error is Responses) ? error : Responses.noResults
         }
         
         return noResultsIfError
@@ -247,7 +249,7 @@ private extension TwitchResponder {
             }
         }
         guard !lastLadderBattles.isEmpty else {
-            throw ResponseError.noResults
+            throw Responses.noResults
         }
         return lastLadderBattles
     }
@@ -284,7 +286,7 @@ private extension TwitchResponder {
             return withFinalString
         }
         guard !finalString.isEmpty else {
-            throw ResponseError.noResults
+            throw Responses.noResults
         }
         
         return finalString

@@ -7,12 +7,11 @@ extension OAuth {
          See OAuthable protocol's explanation for insight about all below stuff.
          */
         
-        let clientId = <#Client Id#>
-        let clientSecret = <#Client Secret#>
+        let clientId = <#client id#>
+        let clientSecret = <#client secret#>
         // The callbackUrl to be used only in tests.
         private let testCallbackUrl = testDict["twitchTestCallbackUrl"] as? String
-        // The callbackUrl that servers will use.
-        private let productionCallbackUrl = <#CallBack URL#>
+        private let productionCallbackUrl = <#production callback url#>
         var callbackUrl: String { testCallbackUrl ?? productionCallbackUrl }
         let providerAuthorizationUrl = "https://id.twitch.tv/oauth2/authorize"
         let providerTokenUrl = "https://id.twitch.tv/oauth2/token"

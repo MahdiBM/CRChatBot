@@ -139,7 +139,7 @@ extension DTOs.Redis.Player {
                 return Self.loadFromDb(req, for: score, intervalReducer: newReducer)
             }
             else {
-                return req.eventLoop.makeSucceededFuture([])
+                return req.eventLoop.future([])
             }
         }
         

@@ -26,7 +26,7 @@ extension TwitchResponder {
                     case let streamer?: return try getStreamerTagAndName(streamer: streamer)
                     // Streamer must be in db if a request has passed the validation,
                     // assuming this not a Admin request and is from NightBot.
-                    default: throw ResponseError.unknownFailure(errorId: 89483)
+                    default: throw Responses.unknownFailure(errorId: 89483)
                     }
                 }
             
@@ -52,14 +52,14 @@ private extension TwitchResponder {
             case let unwrappedTag?:
                 return (name: unwrappedName, tag: unwrappedTag)
             default:
-                throw ResponseError.custom("You need to first set streamer tag using command '!cr set tag STREAMER_TAG_HERE'. MUST NOT CONTAIN '#'")
+                throw Responses.custom("You need to first set streamer tag using command '!cr set tag STREAMER_TAG_HERE'. MUST NOT CONTAIN '#'")
             }
         default:
             switch streamerTag {
             case nil:
-                throw ResponseError.custom("You need to first set streamer name using command '!cr set name STREAMER_NAME_HERE' and set streamer tag using command '!cr set tag STREAMER_TAG_HERE'. MUST NOT CONTAIN '#'")
+                throw Responses.custom("You need to first set streamer name using command '!cr set name STREAMER_NAME_HERE' and set streamer tag using command '!cr set tag STREAMER_TAG_HERE'. MUST NOT CONTAIN '#'")
             default:
-                throw ResponseError.custom("You need to first set streamer name using command '!cr set name STREAMER_NAME_HERE'.")
+                throw Responses.custom("You need to first set streamer name using command '!cr set name STREAMER_NAME_HERE'.")
             }
         }
     }
@@ -79,7 +79,7 @@ private extension TwitchResponder {
             let current = populate(currentSeason.trophies)
             let rank = populate(currentSeason.rank)
             if highest == current && current == rank && rank == "Unknown" {
-                throw ResponseError.custom("Could not retrieve valid player stats."
+                throw Responses.custom("Could not retrieve valid player stats."
                                             + " make sure your entered tag is correct.")
             }
             let response = name
@@ -104,7 +104,7 @@ private extension TwitchResponder {
         let clientResponse = req.client.send(clientRequest)
         let content = clientResponse.flatMapThrowing { response -> Player in
             guard let decoded = try? response.content.decode(Player.self) else {
-                throw ResponseError.failedToCommunicateWithCRAPI(errorId: 9329)
+                throw Responses.failedToCommunicateWithCRAPI(errorId: 9329)
             }
             return decoded
         }
@@ -114,9 +114,9 @@ private extension TwitchResponder {
                     + " communicating with the Official Clash Royale API."
                     + " No. 83294."
                 switch hasPreferredTag {
-                case true: throw ResponseError
+                case true: throw Responses
                     .custom("Make sure your input tag is correct." + suffix)
-                case false: throw ResponseError
+                case false: throw Responses
                     .custom("Make sure streamer tag is correct. You can change streamer"
                                 + " tag using command `!cr set tag STREAMER_TAG_HERE`."
                                 + " Do NOT include the `#`."

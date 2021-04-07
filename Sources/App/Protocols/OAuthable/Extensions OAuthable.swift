@@ -106,14 +106,14 @@ private extension OAuthable {
                 .all()
                 .map { $0.randomElement() }
         } else {
-            anotherToken = req.eventLoop.makeSucceededFuture(nil)
+            anotherToken = req.eventLoop.future(nil)
         }
         
         let deleteCurrentToken = anotherToken.flatMap { anotherToken -> ELF<OAuthTokens?> in
             if let anotherToken = anotherToken {
                 return currentToken.delete(on: req.db).map { _ in anotherToken }
             } else {
-                return req.eventLoop.makeSucceededFuture(nil)
+                return req.eventLoop.future(nil)
             }
         }
         let renewedToken = deleteCurrentToken.tryFlatMap { newToken -> ELF<OAuthTokens> in
@@ -160,7 +160,7 @@ private extension OAuthable {
            let content = try? res.content.decode(T.self) {
             return content
         } else {
-            if let error = (try? req.query.decode(ErrorParam.self))?.error {
+            if let error = try? req.query.get(String.self, at: "error") {
                 throw OAuthableError.providerError(status: res.status, error: error)
             } else {
                 throw OAuthableError.providerError(status: res.status, error: res.body?.contentString)
@@ -200,7 +200,7 @@ extension OAuthable {
     throws -> ELF<OAuthTokens> {
         typealias QueryParams = DTOs.OAuth.AuthorizationQueryParameters
         guard let params = try? req.query.decode(QueryParams.self) else {
-            if let error = (try? req.query.decode(ErrorParam.self))?.error {
+            if let error = try? req.query.get(String.self, at: "error") {
                 throw OAuthableError.providerError(status: .badRequest, error: error)
             } else {
                 throw OAuthableError.providerError(status: .badRequest, error: req.body.string)
@@ -222,7 +222,7 @@ extension OAuthable {
         let isTesting = req.application.environment == .testing
         if isTesting {
             let fakeResponse = OAuth.twitch.fakeAccessTokenClientResponse
-            clientResponse = req.eventLoop.makeSucceededFuture(fakeResponse)
+            clientResponse = clientResponse.transform(to: fakeResponse)
         }
         let accessTokenContent = clientResponse.flatMapThrowing {
             res -> DTOs.OAuth.UserAccessToken in
@@ -243,7 +243,7 @@ extension OAuthable {
         if token.hasExpired {
             return renewToken(req, token: token)
         } else {
-            return req.eventLoop.makeSucceededFuture(token)
+            return req.eventLoop.future(token)
         }
     }
 }
@@ -289,13 +289,6 @@ private struct QueryParameters: Content {
     var queryString: String {
         self.queryStrings.joined(separator: "&")
     }
-}
-
-//MARK: - Error Parameter
-
-/// A model to decode `error` query parameter.
-private struct ErrorParam: Content {
-    var error: String
 }
 
 //MARK: - QueryParametersPolicy

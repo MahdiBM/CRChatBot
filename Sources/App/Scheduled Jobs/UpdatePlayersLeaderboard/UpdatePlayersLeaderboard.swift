@@ -66,7 +66,9 @@ struct UpdatePlayersLeaderboard: ScheduledJob {
                                lifecyclesPassed: self.lifecyclesPassed + 1,
                                startInterval: startInterval,
                                lifeTime: lifeTime)
-            return newTask.run(context: context)
+            return context.eventLoop.flatScheduleTask(in: .nanoseconds(0)) {
+                newTask.run(context: context)
+            }.futureResult
         }
         
         return recall

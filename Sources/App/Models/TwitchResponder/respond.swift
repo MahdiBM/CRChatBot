@@ -16,7 +16,7 @@ private extension TwitchResponder {
         let validation: ELF<Void> = {
             switch isAdminReq {
             case true: // No validation needed for a request from an Admin.
-                return req.eventLoop.makeSucceededFuture(())
+                return req.eventLoop.future(())
             case false:
                 return validateRequest()
             }
@@ -34,7 +34,7 @@ private extension TwitchResponder {
         switch requestType {
         case .deck:
             guard let trophies = try? Int(params.arg2.throwingUnwrap()) else {
-                throw ResponseError.help(case: .deckCommand)
+                throw Responses.help(case: .deckCommand)
             }
             let theRest = params.theRest(startingFrom: \Params.arg3)
             return findDeck(using: trophies, filterBy: theRest)
@@ -43,12 +43,12 @@ private extension TwitchResponder {
         case .set:
             guard let key = params.arg2,
                   let theRest = params.theRest(startingFrom: \Params.arg3) else {
-                throw ResponseError.help(case: .setCommand)
+                throw Responses.help(case: .setCommand)
             }
             return try setInfo(key: key, value: theRest)
         case .help: return help(nextArg: params.arg2)
-        case .contact: throw ResponseError.contact
-        case .unknown: throw ResponseError.invalidCommand
+        case .contact: throw Responses.contact
+        case .unknown: throw Responses.invalidCommand
         }
     }
     
@@ -74,7 +74,7 @@ private extension TwitchResponder {
             }
             else {
                 // Don't throw errors if somehow someway streamer is not in the db already.
-                return req.eventLoop.makeSucceededFuture(())
+                return req.eventLoop.future(())
             }
         }
         
@@ -89,10 +89,10 @@ private extension TwitchResponder {
             // Actual errors that are not a straight string
             // have no use for NightBot users and rather create a bad UX.
         let errorsHandled = response.flatMapErrorThrowing { error in
-            if let twitchResponderError = error as? ResponseError {
+            if let twitchResponderError = error as? Responses {
                 return responseString(twitchResponderError.description)
             } else {
-                return responseString(.unknownFailure(errorId: 90482))
+                return responseString(.unknownFailure(errorId: 90482, description: error.localizedDescription))
             }
         }
         
@@ -116,18 +116,18 @@ private extension TwitchResponder {
     }
     
     /// Returns a string which is ready to be passed as a NightBot response.
-    func responseString(_ message: ResponseError) -> String {
+    func responseString(_ message: Responses) -> String {
         responseString(message.description)
     }
     
     /// Returns a ELF<String> which is ready to be passed as a NightBot response.
     func futureString(_ str: String) -> ELF<String> {
         let response = responseString(str)
-        return req.eventLoop.makeSucceededFuture(response)
+        return req.eventLoop.future(response)
     }
     
     /// Returns a ELF<String> which is ready to be passed as a NightBot response.
-    func futureString(_ message: ResponseError) -> ELF<String> {
+    func futureString(_ message: Responses) -> ELF<String> {
         futureString(message.description)
     }
 }
