@@ -173,7 +173,7 @@ private extension TwitchResponder {
                 filtered = leaderboard.filter {
                     let foldedFilterString = filterString.folding(options: .diacriticInsensitive, locale: nil)
                     let foldedName = $0.name.folding(options: .diacriticInsensitive, locale: nil)
-                    return foldedName == foldedFilterString
+                    return foldedName.contains(foldedFilterString)
                 }
             }
         }
