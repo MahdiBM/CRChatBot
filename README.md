@@ -2,8 +2,7 @@
 A Clash Royale Chat Bot for Twitch, written in Swift using Vapor 4, and built on top of NightBot.
 
 # Warning
-This project is currently outdated and the private version of it which im using is significantely different.   
-I might update this repository at a later date or eventually archive it
+This repository is very outdated and the private version of this project has little similarities left with this public version.   
 
 # Introduction
 This is a non-profit community project written by me (MahdiBM), for use of Clash Royale streamers on Twitch, and with help of the official Clash Royale API provided by Supercell. It is currently being used by 10+ Clash Royale streamers on Twitch.    
